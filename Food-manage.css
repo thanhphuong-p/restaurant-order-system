@@ -1,0 +1,144 @@
+/* ======= Tổng thể ======= */
+body {
+    background-color: #f9f9f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    padding-bottom: 40px;
+  }
+  
+  h2 {
+    font-weight: bold;
+    color: #2c3e50;
+    text-align: center;
+    text-shadow: 1px 1px 1px #ccc;
+    margin-bottom: 30px;
+  }
+  
+  /* ======= Form ======= */
+  form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: #555;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    transition: border-color 0.3s;
+  }
+  
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  }
+  
+  /* ======= Bảng món ăn ======= */
+  table {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  
+  .table th, .table td {
+    text-align: center;
+    vertical-align: middle !important;
+    padding: 10px;
+  }
+  
+  th {
+    background-color: #343a40;
+    color: #fff;
+  }
+  
+  /* ======= Ảnh món ăn ======= */
+  .food-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  /* ======= Nút gọn gàng ======= */
+  .btn {
+    border-radius: 6px;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+  }
+   /* Giới hạn chiều rộng input để không quá rộng */
+   input.form-control,
+   select.form-select,
+   textarea.form-control {
+     width: 80%;
+   }
+  
+  /* Các màu nút */
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background-color: #0069d9;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+  }
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+  
+  .btn-warning {
+    background-color: #f39c12;
+    border: none;
+    color: #fff;
+  }
+  .btn-warning:hover {
+    background-color: #e67e22;
+  }
+  
+  .btn-danger {
+    background-color: #e74c3c;
+    border: none;
+    color: #fff;
+  }
+  .btn-danger:hover {
+    background-color: #c0392b;
+  }
+  
+  /* ======= Responsive nhỏ gọn hơn ======= */
+  @media (max-width: 768px) {
+    .food-img {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .btn {
+      padding: 3px 8px;
+      font-size: 12px;
+    }
+  
+    h2 {
+      font-size: 20px;
+    }
+  }
+  

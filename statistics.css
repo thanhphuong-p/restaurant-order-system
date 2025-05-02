@@ -1,0 +1,77 @@
+/* style.css */
+
+/* Tổng thể layout */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Thêm màu nền và kiểu cho các mục trong danh sách thống kê */
+.list-group-item {
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 12px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Hiệu ứng hover khi người dùng di chuột qua mục */
+.list-group-item:hover {
+    background-color: #499bee;
+    transform: scale(1.05);
+}
+
+/* Hiển thị icon và tên thống kê nổi bật */
+.list-group-item.bg-dark {
+    background-color: #1d8bf8 !important;
+    color: rgb(6, 5, 5);
+}
+
+/* Thêm hiệu ứng cho các icon */
+.list-group-item .bi {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* Thêm hiệu ứng cho các nút văn bản trong danh sách */
+.list-group-item.text-white {
+    font-weight: bold;
+    color: rgb(12, 12, 12);
+}
+
+/* Hiệu ứng nhấn (active) liên kết */
+.list-group-item:active {
+    background-color: #6c757d;
+    transform: scale(0.98);
+}
+
+/* Modal */
+.modal-header {
+    background-color: #343a40;
+    color: white;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+}
+
+/* Các bảng thống kê */
+.modal-body .row {
+    margin-bottom: 20px;
+}
+
+.modal-body h5 {
+    font-weight: bold;
+}
+
+.modal-body p {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Hiệu ứng hover khi di chuột qua các liên kết */
+.index a:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
