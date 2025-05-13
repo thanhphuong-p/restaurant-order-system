@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi" ng-app="myApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Food Order App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      background-color: #fefae0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    header {
+      background: #fff8dc;
+      padding: 20px 0;
+      border-bottom: 2px solid #f1c40f;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo img {
+      height: 60px;
+      margin-right: 15px;
+    }
+
+    .logo h1 {
+      font-size: 28px;
+      color: #e67e22;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    h2 {
+      color: #d35400;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .food-card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      padding: 15px;
+      height: 100%;
+    }
+
+    .food-card:hover {
+      transform: scale(1.03);
+    }
+
+    .food-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .food-card h5 {
+      color: #333;
+      margin-top: 12px;
+    }
+
+    .cart-icon {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      background: #e67e22;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo_donghanh {
+      position: absolute;
+      left: 30px;
+    }
+
+    .logo_donghanh img {
+      width: 80px;
+      border-radius: 50%;
+    }
+
+    nav {
+      background: #e17f1e;
+      padding: 0;
+    }
+
+    .navbar-nav {
+      display: flex;
+      justify-content: center;
+      border-bottom: 2px solid #f7a558;
+    }
+
+    .nav-link {
+      color: #d35400;
+      padding: 12px 20px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #000;
+      border-bottom: 3px solid #000;
+    }
+  </style>
+</head>
+<body ng-controller="OrderController">
+
+  <header>
+    <a class="logo_donghanh" href="#">
+      <img src="img/logo.png" alt="Logo">
+    </a>
+    <div class="container logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/3480/3480381.png" alt="Logo">
+      <h1>Food Order App</h1>
+    </div>
+  </header>
+
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand text-warning fw-bold" href="#">Menu</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="menu.html?category=food" ng-class="{active: selectedCategory === 'food'}" ng-click="loadCategory('food')">Món Chính</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="menu.html?category=drink" ng-class="{active: selectedCategory === 'drink'}" ng-click="loadCategory('drink')">Nước Uống</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="Promotions_CTM.html" ng-class="{active: selectedCategory === 'combo'}" ng-click="loadCategory('combo')">Combo Sale</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Danh sách món ăn -->
+  <div class="container mt-4">
+    <h2>Danh Sách Món Ăn</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4" ng-repeat="food in foods">
+        <div class="food-card d-flex flex-column">
+          <img ng-src="{{food.image}}" alt="{{food.name}}">
+          <h5>{{food.name}}</h5>
+          <p>{{food.description}}</p>
+          <p><strong>{{food.price | number}}đ</strong></p>
+          <button class="btn btn-warning mt-auto w-100" ng-click="addToCart(food)">Thêm vào giỏ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Giỏ hàng nổi -->
+  <div class="cart-icon" data-bs-toggle="modal" data-bs-target="#invoiceModal">
+    🛒 {{cart.length}} | {{getTotal() | number}}đ
+  </div>
+
+  <!-- Modal Hóa Đơn -->
+  <div class="modal fade" id="invoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Hóa Đơn</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between" ng-repeat="item in cart">
+              <div>
+                {{item.name}} x {{item.quantity}}
+              </div>
+              <div>
+                {{item.price * item.quantity | number}}đ
+                <button class="btn btn-sm btn-danger ms-2" ng-click="removeFromCart(item)">X</button>
+              </div>
+            </li>
+          </ul>
+          <p><strong>Tổng cộng: {{getTotal() | number}}đ</strong></p>
+          <hr>
+          <h5>Chọn bàn</h5>
+          <div class="row">
+            <div class="col-3 mb-2" ng-repeat="table in tables">
+              <button class="btn w-100"
+                      ng-class="{'btn-success': table.status === 'TRONG', 'btn-danger': table.status === 'DANG_SU_DUNG'}"
+                      ng-click="selectTable(table)">
+                Bàn {{table.name}}
+              </button>
+            </div>
+          </div>
+          <p class="mt-3">Bàn đã chọn: <strong>{{selectedTable.name || 'Chưa chọn'}}</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-success" ng-click="confirmOrder()">Xác nhận đặt món</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AngularJS Controller -->
+  <script>
+    const app = angular.module("myApp", []);
+    app.controller("OrderController", function ($scope, $http) {
+  $scope.foods = [];
+  $scope.cart = JSON.parse(localStorage.getItem("cart")) || [];
+  $scope.tables = [];
+  $scope.selectedTable = {};
+  $scope.selectedCategory = "";
+
+  $scope.init = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    $scope.selectedCategory = urlParams.get("category") || "";
+
+    let apiUrl = "http://localhost:8081/api/foods";
+    if ($scope.selectedCategory) {
+      apiUrl += "/category/" + $scope.selectedCategory;
+    }
+
+    $http.get(apiUrl).then(function (response) {
+      $scope.foods = response.data;
+    });
+  };
+
+  $scope.getTables = function () {
+    $http.get("http://localhost:8081/api/tables").then(function (response) {
+      $scope.tables = response.data;
+    });
+  };
+
+  function saveCart() {
+    localStorage.setItem("cart", JSON.stringify($scope.cart));
+  }
+
+  $scope.addToCart = function (food) {
+    const existing = $scope.cart.find(item => item.id === food.id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      $scope.cart.push({
+        id: food.id,
+        name: food.name,
+        image: food.image,
+        price: food.price,
+        quantity: 1
+      });
+    }
+    saveCart();
+  };
+
+  $scope.removeFromCart = function (item) {
+    const index = $scope.cart.indexOf(item);
+    if (index > -1) {
+      $scope.cart.splice(index, 1);
+      saveCart();
+    }
+  };
+
+  $scope.getTotal = function () {
+    return $scope.cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  $scope.selectTable = function (table) {
+    $scope.selectedTable = table;
+    const modal = new bootstrap.Modal(document.getElementById('invoiceModal'));
+    modal.show();
+  };
+
+  $scope.confirmOrder = function () {
+    if (!$scope.selectedTable.id || $scope.cart.length === 0) {
+      alert("Vui lòng chọn món và bàn!");
+      return;
+    }
+
+    const order = {
+      tableId: $scope.selectedTable.id,
+      items: $scope.cart.map(item => ({
+        foodId: item.id,
+        quantity: item.quantity
+      }))
+    };
+
+    $http.post("http://localhost:8081/api/orders", order).then(function (response) {
+      alert("✅ Đặt món thành công!");
+      $scope.cart = [];
+      saveCart();
+      $scope.selectedTable = {};
+      $scope.getTables();
+      bootstrap.Modal.getInstance(document.getElementById('invoiceModal')).hide();
+    }).catch(function (error) {
+      console.error(error);
+      alert("❌ Có lỗi xảy ra khi đặt hàng.");
+    });
+  };
+
+  // Khởi động
+  $scope.init();
+  $scope.getTables();
+});
+
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
