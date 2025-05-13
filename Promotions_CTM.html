@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi" ng-app="promotionApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Chương trình khuyến mãi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- AngularJS & Bootstrap JS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+ /* Header */
+ header {
+      background: #fff8dc;
+      padding: 20px 0;
+      border-bottom: 2px solid #f1c40f;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo img {
+      height: 60px;
+      margin-right: 15px;
+    }
+        /* Logo */
+.logo_donghanh {
+    position: absolute;
+    left: 30px; /* Đưa logo sang trái cách 100px */
+}
+
+.logo_donghanh img {
+    width: 80px;
+    height: auto;
+    border-radius: 50%;
+}
+
+    .logo h1 {
+      font-size: 28px;
+      color: #e67e22;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    h2 {
+      color: #d35400;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .card-img-top {
+      height: 180px;
+      object-fit: cover;
+    }
+    .text-truncate-description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+    .countdown {
+      font-weight: bold;
+      color: #dc3545;
+    }
+    .cart-icon {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      z-index: 999;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 3px 7px;
+      font-size: 12px;
+    }
+    nav {
+  background: #e17f1e;
+  border-bottom: 2px solid #ff6f00;
+  padding: 0;
+  color: #e67e22;
+}
+
+.navbar-nav {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid #f7a558;
+}
+
+.nav-link {
+  color: #d35400; /* màu cam đậm */
+  padding: 12px 20px;
+  font-weight: bold; /* in đậm mặc định */
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #000; /* màu đen khi nhấn hoặc hover */
+  border-bottom: 3px solid #000;
+  /* font-weight: normal; */ /* nếu muốn không in đậm khi nhấn */
+}
+.cart-icon {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      background: #e67e22;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+  </style>
+</head>
+
+<body ng-controller="PromotionController">
+ 
+  <!-- Giỏ hàng nổi -->
+  <div class="cart-icon" data-bs-toggle="modal" data-bs-target="#invoiceModal">
+    🛒 {{cart.length}} | {{getTotal() | number}}đ
+  </div>
+
+ <!-- Header + Logo -->
+ <header>
+  <a class="logo_donghanh" href="#home">
+    <img src="img/logo.png" alt="Logo">
+</a>
+  <div class="container logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/3480/3480381.png" alt="Logo">
+    <h1>Food Order App</h1>
+  </div>
+</header>
+  <!-- Nav -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container">
+      <a class="navbar-brand text-warning fw-bold" href="#">Menu</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="menu.html?category=food" ng-class="{active: selectedCategory === 'food'}" ng-click="loadCategory('food')">Món Chính</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="menu.html?category=drink" ng-class="{active: selectedCategory === 'drink'}" ng-click="loadCategory('drink')">Nước Uống</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="Promotions_CTM.html" ng-class="{active: selectedCategory === 'combo'}" ng-click="loadCategory('combo')">Combo Sale</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Danh sách khuyến mãi -->
+  <div class="container py-4">
+    <h2 class="text-center mb-4">🎉 Các chương trình khuyến mãi</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <div class="col" ng-repeat="promo in promotions" ng-if="promo.status === true">
+        <div class="card h-100 shadow-sm d-flex flex-column">
+          <img ng-src="{{promo.image}}" class="card-img-top" alt="{{promo.name}}">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{promo.name}}</h5>
+            <p class="card-text text-truncate-description">{{promo.description}}</p>
+            <p class="fw-bold text-danger fs-4 mt-auto">{{promo.price | number:0}}₫</p>
+            <p><small>Áp dụng: {{promo.startDate | date:'dd/MM/yyyy'}} - {{promo.endDate | date:'dd/MM/yyyy'}}</small></p>
+            <p class="countdown">{{ promo.remainingTime }}</p>
+            <button class="btn btn-success w-100 mt-2" ng-click="addToCart(promo)">➕ Thêm vào giỏ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Giỏ hàng -->
+  <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">🛍️ Giỏ hàng của bạn</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered" ng-if="cart.length > 0">
+            <thead class="table-light">
+              <tr>
+                <th>Hình ảnh</th>
+                <th>Tên</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in cart">
+                <td><img ng-src="{{item.image}}" style="height: 60px;"></td>
+                <td>{{item.name}}</td>
+                <td>{{item.price | number:0}}₫</td>
+                <td><input type="number" class="form-control" ng-model="item.quantity" min="1" ng-change="updateTotal()" style="width: 70px;"></td>
+                <td>{{item.price * item.quantity | number:0}}₫</td>
+                <td><button class="btn btn-danger btn-sm" ng-click="removeFromCart(item)">Xóa</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="text-center text-muted" ng-if="cart.length === 0">🛒 Giỏ hàng trống.</div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <h5 class="mb-0">Tổng tiền: <span class="text-danger">{{getTotal() | number:0}}₫</span></h5>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tableModal">Chọn Bàn</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Chọn bàn -->
+  <div class="modal fade" id="tableModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">🍽️ Chọn Bàn</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-3" ng-repeat="table in tables">
+              <div class="card text-center"
+                   ng-click="selectTable(table)"
+                   ng-style="{
+                     'background-color': table.status === 'TRONG' ? '#28a745' : '#dc3545',
+                     'color': 'white',
+                     'cursor': 'pointer',
+                     'border-radius': '12px'
+                   }"
+                   onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'">
+                <div class="card-body py-4">
+                  <h5 class="card-title">Bàn {{table.name}}</h5>
+                  <p>
+                    <i class="bi"
+                       ng-class="{
+                         'bi-check-circle-fill text-white': table.status === 'TRONG',
+                         'bi-exclamation-circle-fill text-white': table.status !== 'TRONG'
+                       }"></i>
+                    {{ table.status === 'TRONG' ? 'Trống' : 'Đang hoạt động' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <span>🔘 Bàn đã chọn: <strong class="text-primary">{{ selectedTable.name || 'Chưa chọn' }}</strong></span>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Hóa đơn -->
+  <div class="modal fade" id="invoiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">🧾 Hóa Đơn</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <h5>Bàn: {{ selectedTable.tableNumber}}</h5>
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Tên Món</th>
+                <th>Số Lượng</th>
+                <th>Giá</th>
+                <th>Thành Tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in cart">
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price | number:0 }}₫</td>
+                <td>{{ item.price * item.quantity | number:0 }}₫</td>
+              </tr>
+            </tbody>
+          </table>
+          <h4 class="text-end">Tổng cộng: <span class="text-danger">{{ getTotal() | number:0 }}₫</span></h4>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button class="btn btn-primary" ng-click="confirmOrder()">Xác Nhận Đặt Hàng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AngularJS Script -->
+  <script>
+    var app = angular.module('promotionApp', []);
+    app.controller('PromotionController', function($scope, $http, $interval) {
+      $scope.promotions = [];
+      $scope.cart = JSON.parse(localStorage.getItem("cart")) || [];
+      $scope.tables = [];
+      $scope.selectedTable = JSON.parse(localStorage.getItem("selectedTable")) || {};
+    
+      // Load khuyến mãi
+      $scope.getPromotions = function() {
+        $http.get('http://localhost:8081/api/promotions')
+          .then(res => $scope.promotions = res.data)
+          .catch(err => console.error('Lỗi khuyến mãi:', err));
+      };
+    
+      // Load bàn
+      $scope.getTables = function() {
+        $http.get('http://localhost:8081/api/tables')
+          .then(res => $scope.tables = res.data)
+          .catch(err => console.error('Lỗi bàn:', err));
+      };
+    
+      // Thêm vào giỏ
+      $scope.addToCart = function(promo) {
+        let item = $scope.cart.find(i => i.id === promo.id);
+        if (item) {
+          item.quantity += 1;
+        } else {
+          $scope.cart.push({ ...promo, quantity: 1 });
+        }
+        $scope.saveCart();
+      };
+    
+      // Xóa khỏi giỏ
+      $scope.removeFromCart = function(item) {
+        let index = $scope.cart.indexOf(item);
+        if (index > -1) {
+          $scope.cart.splice(index, 1);
+          $scope.saveCart();
+        }
+      };
+    
+      // Tính tổng tiền
+      $scope.getTotal = function() {
+        return $scope.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      };
+    
+      // Cập nhật tổng
+      $scope.updateTotal = function() {
+        $scope.saveCart();
+      };
+    
+      // Chọn bàn
+      $scope.selectTable = function(table) {
+        $scope.selectedTable = table;
+        localStorage.setItem("selectedTable", JSON.stringify($scope.selectedTable));
+        new bootstrap.Modal(document.getElementById('invoiceModal')).show();
+      };
+    
+      // Xác nhận đặt hàng (có thể gửi về API ở đây nếu cần)
+      $scope.confirmOrder = function() {
+        if (!$scope.selectedTable.id || $scope.cart.length === 0) {
+          alert("Vui lòng chọn bàn và sản phẩm!");
+          return;
+        }
+    
+        const order = {
+          tableId: $scope.selectedTable.id,
+          items: $scope.cart.map(i => ({
+            foodId: i.id,
+            quantity: i.quantity
+          }))
+        };
+    
+        $http.post('http://localhost:8081/api/orders', order)
+          .then(res => {
+            alert("✅ Đặt món thành công!");
+            $scope.cart = [];
+            localStorage.removeItem("cart");
+            $scope.getTables();
+            bootstrap.Modal.getInstance(document.getElementById('invoiceModal')).hide();
+          })
+          .catch(err => {
+            alert("❌ Lỗi đặt hàng!");
+            console.error(err);
+          });
+      };
+    
+      // Lưu giỏ hàng vào localStorage
+      $scope.saveCart = function() {
+        localStorage.setItem("cart", JSON.stringify($scope.cart));
+      };
+    
+      // Đếm ngược thời gian khuyến mãi
+      function updateCountdown() {
+        const now = new Date().getTime();
+        $scope.promotions.forEach(p => {
+          const end = new Date(p.endDate).getTime();
+          const distance = end - now;
+          if (distance > 0) {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            p.remainingTime = `${days} ngày ${hours} giờ ${minutes} phút`;
+          } else {
+            p.remainingTime = "Đã kết thúc";
+          }
+        });
+      }
+    
+      $interval(updateCountdown, 60000); // Cập nhật mỗi phút
+      $scope.getPromotions();
+      $scope.getTables();
+      updateCountdown(); // cập nhật lần đầu
+    });
+    </script>
+    
+
+</body>
+</html>
