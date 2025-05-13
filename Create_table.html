@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="foodOrderApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý bàn</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <!-- Bootstrap 5 JS (kèm Popper.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome (nếu chưa có) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+</head>
+
+
+<body ng-controller="TableController">
+  <div ng-include="'header_admin.html'"></div>
+  <div class="container mt-4">
+    <h3>Quản lý bàn</h3>
+
+    <!-- Form thêm/sửa bàn -->
+    <form ng-submit="save()" class="mb-4">
+      <input type="text" ng-model="table.tableNumber" placeholder="Số bàn" class="form-control mb-2" required>
+      <select ng-model="table.status" class="form-control mb-2">
+        <option value="TRONG">Trống</option>
+        <option value="DANG_HOAT_DONG">Đang hoạt động</option>
+      </select>
+      <button type="submit" class="btn btn-primary me-2">
+        {{ table.id ? 'Cập nhật' : 'Thêm' }}
+      </button>
+      <button type="button" class="btn btn-secondary" ng-click="reset()">Làm mới</button>
+    </form>
+
+    <!-- Danh sách bàn -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Số bàn</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="t in tables">
+          <td>{{t.id}}</td>
+          <td>{{t.tableNumber}}</td>
+          <td>
+            <span ng-class="{
+              'badge bg-success': t.status === 'TRONG',
+              'badge bg-danger': t.status === 'DANG_HOAT_DONG',
+              'badge bg-warning text-dark': t.status === 'DANG_DUNG_MON'
+            }">
+              {{ 
+                t.status === 'TRONG' ? 'Trống' : 
+                (t.status === 'DANG_HOAT_DONG' ? 'Đang hoạt động' : 'Đang dùng món') 
+              }}
+            </span>
+            
+          </td>
+          <td>
+            <button class="btn btn-sm btn-warning me-2" ng-click="edit(t)">Sửa</button>
+            <button class="btn btn-sm btn-danger me-2" ng-click="delete(t.id)">Xóa</button>
+            <button class="btn btn-sm btn-info" ng-click="viewDetails(t)">+</button>
+            <button class="btn btn-sm btn-success me-2"
+                      ng-if="t.status === 'DANG_HOAT_DONG'"
+                      ng-click="markAsServing(t)">Lên món</button>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal chi tiết đơn hàng -->
+  <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Chi tiết đơn hàng của bàn {{ selectedTableNumber }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered" ng-if="orderDetails.length > 0">
+            <thead>
+              <tr>
+                <th>Tên món</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="item in orderDetails">
+                <td>{{ item.foodName }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price | currency:'':0 }} VNĐ</td>
+              </tr>
+            </tbody>
+          </table>
+          <p ng-if="orderDetails.length == 0">Bàn này chưa gọi món nào.</p>
+        </div>
+        
+      </div>
+    </div>
+    
+  </div>
+  <div ng-if="selectedOrder">
+    <h4>Chi tiết đơn bàn: {{selectedOrder.tableName}}</h4>
+    <ul>
+      <li ng-repeat="item in selectedOrder.details">
+        {{item.foodName}} - SL: {{item.quantity}} - Giá: {{item.price}}
+      </li>
+    </ul>
+  </div>
+  
+
+  <!-- AngularJS Script -->
+  <script src="js/Table_manage.js"></script>
+  <script>
+     loadFoods();
+    fetch('header_admin.html')
+.then(response => response.text())
+.then(data => {
+    document.getElementById('header').innerHTML = data;
+})
+.catch(error => console.error('Error loading header:', error));
+
+  </script>
+</body>
+</html>
