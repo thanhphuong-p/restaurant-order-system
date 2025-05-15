@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="statisticsApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Thống kê doanh thu & món ăn bán chạy</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 30px;
+        }
+        h2 {
+            color: #3c8dbc;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #d0d0d0;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #3c8dbc;
+            color: white;
+        }
+    </style>
+</head>
+<body ng-controller="StatisticsController">
+
+    <h2>📈 Doanh thu theo ngày</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>Tổng doanh thu (VNĐ)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in dailyRevenue">
+                <td>{{ item.name }}</td>
+                <td>{{ item.totalSold | currency:"":0 }} VNĐ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br><br>
+
+    <h2>🔥 Top 10 món ăn bán chạy nhất</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên món ăn</th>
+                <th>Số lượng đã bán</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in topFoods">
+                <td>{{ item.name }}</td>
+                <td>{{ item.totalSold }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const app = angular.module('statisticsApp', []);
+
+        app.controller('StatisticsController', function($scope, $http) {
+            $http.get("http://localhost:8081/api/statistics/daily-revenue").then(function(response) {
+                $scope.dailyRevenue = response.data;
+            });
+
+            $http.get("http://localhost:8081/api/statistics/top-foods").then(function(response) {
+                $scope.topFoods = response.data.slice(0, 10); // Giới hạn top 10
+            });
+        });
+    </script>
+</body>
+</html>
