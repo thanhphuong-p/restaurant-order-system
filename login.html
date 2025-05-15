@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="css/login.css">
+    
+  </head>
+  <body ng-app="loginApp" ng-controller="LoginController">
+    <div class="login-container">
+      <h2>Login</h2>
+      <div class="input-field">
+        <input
+          type="text"
+          id="username"
+          ng-model="loginData.username"
+          required
+        />
+        <label for="username">Username</label>
+      </div>
+      <div class="input-field">
+        <input
+          type="password"
+          id="password"
+          ng-model="loginData.password"
+          required
+        />
+        <label for="password">Password</label>
+      </div>
+      <button class="btn-login" ng-click="login()">Login</button>
+      <div class="footer">
+        <p>Don't have an account? <a href="#">Sign up</a></p>
+      </div>
+      <div ng-if="responseMessage" class="error-message" ng-class="{'success-message': loginSuccess, 'failure-message': !loginSuccess}">
+        <p>{{responseMessage}}</p>
+      </div>
+    </div>
+
+    <script src="js/login.js"></script>
+  </body>
+</html>
