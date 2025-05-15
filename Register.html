@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký tài khoản</title>
+    <link rel="stylesheet" href="css/register.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .register-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+
+        .register-form h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background: #218838;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .form-group {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+    </style>
+</head>
+<body>
+
+<div class="register-form">
+    <h2>Đăng ký tài khoản</h2>
+    <div class="form-group">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="username" required>
+    </div>
+    <div class="form-group">
+      <label>Mật khẩu</label>
+      <input type="password" id="password" required>
+      <i class="eye-icon" onclick="togglePasswordVisibility()">
+          👁️
+      </i>
+  </div>
+  
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" required>
+    </div>
+    <div class="form-group">
+        <label>Họ và tên</label>
+        <input type="text" id="fullName" required>
+    </div>
+    <div class="form-group">
+        <label>Số điện thoại</label>
+        <input type="text" id="phone" required>
+    </div>
+    <div class="form-group">
+        <label>Vai trò</label>
+        <select id="isAdmin">
+            <option value="false">Người dùng</option>
+            <option value="true">Quản trị viên</option>
+        </select>
+    </div>
+    <button class="btn-submit" onclick="register()">Đăng ký</button>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    function register() {
+        const data = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+            email: document.getElementById("email").value,
+            fullName: document.getElementById("fullName").value,
+            phone: document.getElementById("phone").value,
+            isAdmin: document.getElementById("isAdmin").value === "true"
+        };
+
+        fetch("http://localhost:8081/api/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(res => {
+            const messageDiv = document.getElementById("message");
+            messageDiv.textContent = res.message;
+            messageDiv.style.color = res.success ? "green" : "red";
+        })
+        .catch(error => {
+            console.error("Lỗi:", error);
+            document.getElementById("message").textContent = "Đăng ký thất bại.";
+            document.getElementById("message").style.color = "red";
+        });
+    }
+    function togglePasswordVisibility() {
+  var passwordField = document.getElementById('password');
+  var eyeIcon = document.querySelector('.eye-icon');
+  
+  // Kiểm tra xem mật khẩu hiện tại là ẩn hay hiển thị
+  if (passwordField.type === 'password') {
+    passwordField.type = 'text';  // Hiển thị mật khẩu
+    eyeIcon.textContent = '🙈';   // Đổi biểu tượng mắt thành 'ẩn'
+  } else {
+    passwordField.type = 'password';  // Ẩn mật khẩu
+    eyeIcon.textContent = '👁️';      // Đổi biểu tượng mắt thành 'hiển thị'
+  }
+}
+
+</script>
+
+</body>
+</html>
